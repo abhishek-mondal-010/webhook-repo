@@ -3,8 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Webhook Dashboard</title>
+    <title>Webhook Activity Dashboard</title>
+
     <style>
+        /* Basic page styling */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f6f8;
@@ -12,89 +14,110 @@
             padding: 0;
         }
 
+        /* Header styling */
         header {
             background-color: #007bff;
             color: white;
-            padding: 20px 40px;
+            padding: 16px;
             text-align: center;
         }
 
         h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 24px;
         }
 
         main {
-            padding: 20px 40px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        th,
-        td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f0f0f0;
-            font-weight: bold;
-        }
-
-        tr:hover {
-            background-color: #f1f9ff;
-        }
-
-        .no-events {
-            text-align: center;
             padding: 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        /* Each event box styling */
+        .event {
+            background: white;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            font-size: 15px;
+        }
+
+        /* Timestamp styling (if displayed) */
+        .timestamp {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Message shown when no events exist */
+        .empty {
+            text-align: center;
             color: #555;
+            margin-top: 40px;
         }
     </style>
 </head>
 
 <body>
 
+    <!-- Page header -->
     <header>
-        <h1>Webhook Dashboard</h1>
+        <h1>GitHub Webhook Activity</h1>
+        <p style="font-size:13px; margin-top:6px;">
+            Auto-refreshes every 15 seconds
+        </p>
     </header>
 
     <main>
-        {% if events %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Event Type</th>
-                    <th>Author</th>
-                    <th>From Branch</th>
-                    <th>To Branch</th>
-                    <th>Timestamp (UTC)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for event in events %}
-                <tr>
-                    <td>{{ event.action }}</td>
-                    <td>{{ event.author }}</td>
-                    <td>{{ event.from_branch or "-" }}</td>
-                    <td>{{ event.to_branch or "-" }}</td>
-                    <td>{{ event.timestamp }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="no-events">
-            <p>No events received yet.</p>
+        <!-- Container where events will be loaded dynamically -->
+        <div id="events">
+            <p class="empty">Loading events…</p>
         </div>
-        {% endif %}
     </main>
+
+    <script>
+        // Function to fetch events from the backend API
+        async function fetchEvents() {
+            try {
+                // Make a GET request to /events endpoint
+                const response = await fetch("/events");
+                const events = await response.json();
+                const container = document.getElementById("events");
+
+                // If no events exist, show a friendly message
+                if (!events.length) {
+                    container.innerHTML = `<p class="empty">No events received yet.</p>`;
+                    return;
+                }
+
+                // Clear previous events
+                container.innerHTML = "";
+
+                // Loop through each event and display it in a box
+                events.forEach(event => {
+                    const div = document.createElement("div");
+                    div.className = "event";
+
+                    div.innerHTML = `
+                    <strong>${event.message}</strong>
+                `;
+
+                    container.appendChild(div);
+                });
+
+            } catch (error) {
+                // Log errors if fetching fails
+                console.error("Failed to load events", error);
+            }
+        }
+
+        // Initial fetch when page loads
+        fetchEvents();
+        // Automatically refresh events every 15 seconds
+        setInterval(fetchEvents, 15000);
+    </script>
 
 </body>
 
