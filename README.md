@@ -4,7 +4,7 @@ Dev Assessment - Webhook Receiver & Dashboard
 
 This repository contains a Flask-based webhook receiver integrated with MongoDB. It listens for GitHub events (push, pull request, and merge) and shows them in a live dashboard that updates every 15 seconds.
 
-Features
+# Features
 
 Receives GitHub webhook events:
 
@@ -48,12 +48,12 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-* Run the flask application (In production, please use Gunicorn)
+* Run the flask application 
 
 ```bash
 python run.py
 ```
-
+```bash
 Configure MongoDB
 
 In app/extensions.py, configure MongoDB and the collection variable
@@ -65,11 +65,12 @@ from pymongo import MongoClient
 client = MongoClient("mongodb://localhost:27017/")
 db = client["webhook_db"]
 collection = db["events"]
+```
 
 ```bash
 POST http://127.0.0.1:5000
 ```
-
+``` bash
 webhook-repo/
 │
 ├── app/
@@ -85,6 +86,6 @@ webhook-repo/
 ├── run.py                    # entry point for Flask app
 ├── requirements.txt
 └── README.md
-
+```
 
 
