@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Webhook Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        main {
+            padding: 20px 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f9ff;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Webhook Dashboard</h1>
+    </header>
+
+    <main>
+        {% if events %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Event Type</th>
+                    <th>Author</th>
+                    <th>From Branch</th>
+                    <th>To Branch</th>
+                    <th>Timestamp (UTC)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.action }}</td>
+                    <td>{{ event.author }}</td>
+                    <td>{{ event.from_branch or "-" }}</td>
+                    <td>{{ event.to_branch or "-" }}</td>
+                    <td>{{ event.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-events">
+            <p>No events received yet.</p>
+        </div>
+        {% endif %}
+    </main>
+
+</body>
+
+</html>
